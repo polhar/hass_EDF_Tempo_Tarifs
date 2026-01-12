@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration EDF Tempo",
+        "data": {
+          "puissance_souscrite": "Puissance souscrite (kVA)"
+        }
+      }
+    },
+    "error": {
+      "invalid_puissance": "Puissance souscrite invalide. Valeurs acceptées : 6, 9, 12, 15, 18, 30, 36 kVA."
+    },
+    "abort": {
+      "already_configured": "Cette puissance souscrite est déjà configurée."
+    }
+  }
+}
