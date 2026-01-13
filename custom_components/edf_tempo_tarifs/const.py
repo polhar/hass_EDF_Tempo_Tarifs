@@ -1,7 +1,7 @@
 """Constants for EDF Tempo Tarifs integration."""
 
 import logging
-from datetime import timedelta
+from datetime import date, timedelta
 
 DOMAIN = "edf_tempo_tarifs"
 LOGGER = logging.getLogger(__name__)
@@ -12,8 +12,30 @@ LOGGER = logging.getLogger(__name__)
 API_URL = (
     "https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/"
 )
-API_PARAMS = {"page_size": 1, "__id__sort": "desc"}
+API_BASE_PARAMS = {"page_size": 1, "DATE_DEBUT__sort": "desc"}
 API_TIMEOUT = 30  # secondes
+
+
+def get_api_params(puissance_souscrite: int, date_max: date | None = None) -> dict:
+    """
+    Génère les paramètres d'API avec les valeurs dynamiques.
+
+    Args:
+        puissance_souscrite: La puissance souscrite en kVA
+        date_max: Date maximum pour les tarifs (défaut: aujourd'hui)
+
+    Returns:
+        Dictionnaire des paramètres pour l'API
+    """
+    if date_max is None:
+        date_max = date.today()
+
+    return {
+        **API_BASE_PARAMS,
+        "P_SOUSCRITE__exact": str(puissance_souscrite),
+        "DATE_DEBUT__less": date_max.isoformat(),
+    }
+
 
 CONF_PUISSANCE_SOUSCRITE = "puissance_souscrite"
 

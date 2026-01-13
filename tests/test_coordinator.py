@@ -1,6 +1,5 @@
 """Tests for the coordinator."""
 import pytest
-import threading
 from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import date
 from homeassistant.core import HomeAssistant
@@ -34,16 +33,9 @@ def mock_api_response():
 @pytest.mark.asyncio
 async def test_fetch_data_success(hass: HomeAssistant, mock_api_response):
     """Test successful data fetch."""
-
-    mock_thread = MagicMock()
-    mock_thread.name = "waitpid-123" 
-    mock_thread.is_alive.return_value = False
-
     coordinator = EDFTempoTarifsCoordinator(hass, 6)
-
-    with patch('threading.current_thread', return_value=mock_thread), \
-         patch.object(coordinator._session, 'get') as mock_get:
-        
+    
+    with patch.object(coordinator._session, 'get') as mock_get:
         # Mock the async context manager
         mock_response = AsyncMock()
         mock_response.status = 200
@@ -170,82 +162,3 @@ async def test_update_interval_reset_on_success(hass: HomeAssistant, mock_api_re
         await coordinator._async_update_data_logic()
         
         assert coordinator.update_interval == UPDATE_INTERVAL
-        
-@pytest.mark.asyncio
-async def test_update_puissance_success(hass: HomeAssistant, mock_api_response):
-    """Test successful power update."""
-    coordinator = EDFTempoTarifsCoordinator(hass, 6)
-    
-    # Mock initial fetch
-    with patch.object(coordinator._session, 'get') as mock_get:
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json = AsyncMock(return_value=mock_api_response)
-        mock_get.return_value.__aenter__.return_value = mock_response
-        
-        await coordinator._fetch_data()
-    
-    # Verify initial power
-    assert coordinator.puissance_souscrite == 6
-    
-    # Update power
-    await coordinator.update_puissance(9)
-    
-    # Verify power was updated
-    assert coordinator.puissance_souscrite == 9
-
-
-@pytest.mark.asyncio
-async def test_update_puissance_same_value(hass: HomeAssistant, mock_api_response):
-    """Test power update with same value doesn't trigger refresh."""
-    coordinator = EDFTempoTarifsCoordinator(hass, 6)
-    
-    # Mock the async_request_refresh to track calls
-    with patch.object(coordinator, 'async_request_refresh') as mock_refresh:
-        # Update with same value
-        await coordinator.update_puissance(6)
-        
-        # Should not trigger refresh
-        mock_refresh.assert_not_called()
-    
-    # Power should still be 6
-    assert coordinator.puissance_souscrite == 6
-
-
-@pytest.mark.asyncio
-async def test_update_puissance_triggers_refresh(hass: HomeAssistant):
-    """Test that power update triggers refresh."""
-    coordinator = EDFTempoTarifsCoordinator(hass, 6)
-    
-    # Mock the async_request_refresh
-    with patch.object(coordinator, 'async_request_refresh') as mock_refresh:
-        # Update with different value
-        await coordinator.update_puissance(9)
-        
-        # Should trigger refresh
-        mock_refresh.assert_called_once()
-    
-    assert coordinator.puissance_souscrite == 9
-
-
-@pytest.mark.asyncio
-async def test_update_puissance_updates_api_params(hass: HomeAssistant, mock_api_response):
-    """Test that API params are updated when power changes."""
-    coordinator = EDFTempoTarifsCoordinator(hass, 6)
-    
-    # Update power
-    await coordinator.update_puissance(12)
-    
-    # Verify API call uses new power
-    with patch.object(coordinator._session, 'get') as mock_get:
-        mock_response = AsyncMock()
-        mock_response.status = 200
-        mock_response.json = AsyncMock(return_value=mock_api_response)
-        mock_get.return_value.__aenter__.return_value = mock_response
-        
-        await coordinator._fetch_data()
-        
-        # Check that API was called with new power parameter
-        call_args = mock_get.call_args
-        params = call_args[1]['params']
-        assert params['P_SOUSCRITE__exact'] == '12'

@@ -11,7 +11,6 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    API_PARAMS,
     API_TIMEOUT,
     API_URL,
     DOMAIN,
@@ -19,6 +18,7 @@ from .const import (
     RETRY_INTERVAL,
     SENSOR_TYPES,
     UPDATE_INTERVAL,
+    get_api_params,
 )
 
 
@@ -55,8 +55,7 @@ class EDFTempoTarifsCoordinator(DataUpdateCoordinator):
 
     async def _fetch_data(self) -> dict[str, Any]:
         """Fetch data from API."""
-        params = API_PARAMS.copy()
-        params["P_SOUSCRITE__exact"] = str(self.puissance_souscrite)
+        params = get_api_params(self.puissance_souscrite)
 
         LOGGER.debug("Fetching EDF Tempo Tarifs data for %s kVA", self.puissance_souscrite)
 
