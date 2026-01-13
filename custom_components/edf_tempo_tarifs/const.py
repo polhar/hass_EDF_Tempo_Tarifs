@@ -1,15 +1,19 @@
 """Constants for EDF Tempo Tarifs integration."""
-from datetime import timedelta
+
 import logging
+from datetime import timedelta
 
 DOMAIN = "edf_tempo_tarifs"
 LOGGER = logging.getLogger(__name__)
 
-API_URL = "https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/"
-API_PARAMS = {
-    "page_size": 1,
-    "__id__sort": "desc"
-}
+# API endpoint - Documentation disponible :
+# - Swagger: https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/swagger/
+# - Profile: https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/profile/
+API_URL = (
+    "https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/"
+)
+API_PARAMS = {"page_size": 1, "__id__sort": "desc"}
+API_TIMEOUT = 30  # secondes
 
 CONF_PUISSANCE_SOUSCRITE = "puissance_souscrite"
 
@@ -23,7 +27,7 @@ SENSOR_TYPES = {
         "state_class": "measurement",
         "unit": "€/kWh",
         "icon": "mdi:flash",
-        "suggested_display_precision": 4
+        "suggested_display_precision": 4,
     },
     "HPJB": {
         "name": "Tarif HP Bleu TTC",
@@ -32,7 +36,7 @@ SENSOR_TYPES = {
         "state_class": "measurement",
         "unit": "€/kWh",
         "icon": "mdi:flash",
-        "suggested_display_precision": 4
+        "suggested_display_precision": 4,
     },
     "HCJW": {
         "name": "Tarif HC Blanc TTC",
@@ -41,7 +45,7 @@ SENSOR_TYPES = {
         "state_class": "measurement",
         "unit": "€/kWh",
         "icon": "mdi:flash",
-        "suggested_display_precision": 4
+        "suggested_display_precision": 4,
     },
     "HPJW": {
         "name": "Tarif HP Blanc TTC",
@@ -50,7 +54,7 @@ SENSOR_TYPES = {
         "state_class": "measurement",
         "unit": "€/kWh",
         "icon": "mdi:flash",
-        "suggested_display_precision": 4
+        "suggested_display_precision": 4,
     },
     "HCJR": {
         "name": "Tarif HC Rouge TTC",
@@ -59,7 +63,7 @@ SENSOR_TYPES = {
         "state_class": "measurement",
         "unit": "€/kWh",
         "icon": "mdi:flash",
-        "suggested_display_precision": 4
+        "suggested_display_precision": 4,
     },
     "HPJR": {
         "name": "Tarif HP Rouge TTC",
@@ -68,7 +72,7 @@ SENSOR_TYPES = {
         "state_class": "measurement",
         "unit": "€/kWh",
         "icon": "mdi:flash",
-        "suggested_display_precision": 4
+        "suggested_display_precision": 4,
     },
     "PART_FIXE_TTC": {
         "name": "Abonnement annuel TTC",
@@ -77,14 +81,14 @@ SENSOR_TYPES = {
         "state_class": "total_increasing",
         "unit": "€/an",
         "icon": "mdi:cash",
-        "suggested_display_precision": 2
+        "suggested_display_precision": 2,
     },
     "DATE_DEBUT": {
         "name": "Date début tarifs",
         "api_field": "DATE_DEBUT",
         "device_class": "date",
-        "icon": "mdi:calendar"
-    }
+        "icon": "mdi:calendar",
+    },
 }
 
 UPDATE_INTERVAL = timedelta(hours=24)

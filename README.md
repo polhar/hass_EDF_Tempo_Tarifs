@@ -1,7 +1,9 @@
 # Intégration EDF Tempo Tarifs pour Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-![Version](https://img.shields.io/github/v/release/votre-username/hass-edf-tempo)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![GitHub Release](https://img.shields.io/github/v/release/polhar/hass_EDF_Tempo_Tarifs)](https://github.com/polhar/hass_EDF_Tempo_Tarifs/releases)
+[![Validate](https://github.com/polhar/hass_EDF_Tempo_Tarifs/workflows/Validate/badge.svg)](https://github.com/polhar/hass_EDF_Tempo_Tarifs/actions)
+[![codecov](https://codecov.io/gh/polhar/hass_EDF_Tempo_Tarifs/branch/main/graph/badge.svg)](https://codecov.io/gh/polhar/hass_EDF_Tempo_Tarifs)
 
 Intégration Home Assistant pour récupérer les tarifs EDF Tempo via l'API publique data.gouv.fr.
 

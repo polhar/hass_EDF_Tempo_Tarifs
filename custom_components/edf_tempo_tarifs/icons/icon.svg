@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Blue glow for Tempo -->
+    <radialGradient id="blueGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- White glow for Tempo -->
+    <radialGradient id="whiteGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Red glow for Tempo -->
+    <radialGradient id="redGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Rounded background -->
+  <rect width="256" height="256" rx="48" fill="url(#bgGradient)"/>
+  
+  <!-- Tempo color indicators (blue, white, red dots) -->
+  <circle cx="64" cy="80" r="18" fill="url(#blueGlow)"/>
+  <circle cx="64" cy="80" r="12" fill="#3b82f6"/>
+  
+  <circle cx="128" cy="80" r="18" fill="url(#whiteGlow)"/>
+  <circle cx="128" cy="80" r="12" fill="#f8fafc"/>
+  
+  <circle cx="192" cy="80" r="18" fill="url(#redGlow)"/>
+  <circle cx="192" cy="80" r="12" fill="#ef4444"/>
+  
+  <!-- Lightning bolt (electricity symbol) -->
+  <g transform="translate(128, 150)">
+    <path d="M -8,-50 L 20,-10 L 4,-10 L 12,50 L -16,5 L 0,5 Z" 
+          fill="#fbbf24" 
+          stroke="#f59e0b" 
+          stroke-width="2"/>
+    <!-- Glow effect -->
+    <path d="M -8,-50 L 20,-10 L 4,-10 L 12,50 L -16,5 L 0,5 Z" 
+          fill="#fbbf24" 
+          opacity="0.5"
+          filter="blur(4px)"/>
+  </g>
+  
+  <!-- Euro symbol for tariffs -->
+  <g transform="translate(50, 200)">
+    <text font-family="Arial, sans-serif" 
+          font-size="32" 
+          font-weight="bold" 
+          fill="#ffffff"
+          opacity="0.9">€</text>
+  </g>
+  
+  <!-- Graph/chart lines for tariffs variation -->
+  <g transform="translate(100, 210)" opacity="0.7">
+    <polyline points="0,0 15,-8 30,-4 45,-12 60,-6" 
+              stroke="#10b981" 
+              stroke-width="3" 
+              fill="none"
+              stroke-linecap="round"/>
+    <polyline points="0,10 15,6 30,12 45,4 60,14" 
+              stroke="#60a5fa" 
+              stroke-width="3" 
+              fill="none"
+              stroke-linecap="round"/>
+  </g>
+</svg>
