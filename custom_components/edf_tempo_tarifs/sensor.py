@@ -6,7 +6,7 @@ from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -100,3 +100,31 @@ class EDFTempoTarifsSensor(CoordinatorEntity, SensorEntity):
             and self._sensor_key in self.coordinator.data
             and self.coordinator.data[self._sensor_key] is not None
         )
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        if not self.coordinator.last_update_success:
+            return
+
+        # Récupérer la nouvelle valeur depuis le coordinateur
+        new_value = None
+        if self.coordinator.data and self._sensor_key in self.coordinator.data:
+            new_value = self.coordinator.data.get(self._sensor_key)
+
+        # Récupérer l'ancienne valeur actuelle
+        old_value = self._attr_native_value
+
+        # Comparaison simple et directe
+        if old_value == new_value and self.available:
+            # Même valeur ET déjà disponible, on ne fait RIEN
+            return
+
+        # Si la valeur a changé OU si l'entité n'est pas encore disponible
+        self._attr_native_value = new_value
+
+        # Force l'entité à devenir disponible si elle ne l'est pas déjà
+        if not self.available:
+            self._attr_available = True
+
+        self.async_write_ha_state()
