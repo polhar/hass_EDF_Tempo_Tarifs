@@ -15,6 +15,8 @@ API_URL = (
 API_BASE_PARAMS = {"page_size": 1, "DATE_DEBUT__sort": "desc"}
 API_TIMEOUT = 30  # secondes
 
+UPDATE_INTERVAL = timedelta(days=1)
+
 
 def get_api_params(puissance_souscrite: int, date_max: date | None = None) -> dict:
     """
