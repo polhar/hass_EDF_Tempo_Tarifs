@@ -73,9 +73,11 @@ jobs:
       - id: get-versions
         run: |
           TEST_VERSIONS=$(grep -A2 "tool.supported-python" pyproject.toml | grep versions | sed 's/.*= //' | tr -d ' ')
-          echo "test-matrix={\"python-version\": $TEST_VERSIONS}" >> $GITHUB_OUTPUT
+          echo "test-matrix<<EOF" >> $GITHUB_OUTPUT
+          echo "$TEST_VERSIONS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
           
-          LINT_VERSION=$(grep lint-version pyproject.toml | cut -d'"' -f2)
+          LINT_VERSION=$(grep -A2 "tool.supported-python" pyproject.toml | grep lint-version | cut -d'"' -f2)
           echo "lint-version=$LINT_VERSION" >> $GITHUB_OUTPUT
 
   # Validation HACS et Hassfest
