@@ -3,6 +3,8 @@
 import logging
 from datetime import date, timedelta
 
+from homeassistant.const import CURRENCY_EURO, UnitOfEnergy, UnitOfTime
+
 DOMAIN = "edf_tempo_tarifs"
 LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +51,7 @@ SENSOR_TYPES = {
         "api_field": "PART_VARIABLE_HCBleu_TTC",
         "device_class": "monetary",
         "state_class": "measurement",
-        "unit": "€/kWh",
+        "unit": f"{CURRENCY_EURO}/{UnitOfEnergy.KILO_WATT_HOUR}",
         "icon": "mdi:flash",
         "suggested_display_precision": 4,
     },
@@ -58,7 +60,7 @@ SENSOR_TYPES = {
         "api_field": "PART_VARIABLE_HPBleu_TTC",
         "device_class": "monetary",
         "state_class": "measurement",
-        "unit": "€/kWh",
+        "unit": f"{CURRENCY_EURO}/{UnitOfEnergy.KILO_WATT_HOUR}",
         "icon": "mdi:flash",
         "suggested_display_precision": 4,
     },
@@ -67,7 +69,7 @@ SENSOR_TYPES = {
         "api_field": "PART_VARIABLE_HCBlanc_TTC",
         "device_class": "monetary",
         "state_class": "measurement",
-        "unit": "€/kWh",
+        "unit": f"{CURRENCY_EURO}/{UnitOfEnergy.KILO_WATT_HOUR}",
         "icon": "mdi:flash",
         "suggested_display_precision": 4,
     },
@@ -76,7 +78,7 @@ SENSOR_TYPES = {
         "api_field": "PART_VARIABLE_HPBlanc_TTC",
         "device_class": "monetary",
         "state_class": "measurement",
-        "unit": "€/kWh",
+        "unit": f"{CURRENCY_EURO}/{UnitOfEnergy.KILO_WATT_HOUR}",
         "icon": "mdi:flash",
         "suggested_display_precision": 4,
     },
@@ -85,7 +87,7 @@ SENSOR_TYPES = {
         "api_field": "PART_VARIABLE_HCRouge_TTC",
         "device_class": "monetary",
         "state_class": "measurement",
-        "unit": "€/kWh",
+        "unit": f"{CURRENCY_EURO}/{UnitOfEnergy.KILO_WATT_HOUR}",
         "icon": "mdi:flash",
         "suggested_display_precision": 4,
     },
@@ -94,7 +96,7 @@ SENSOR_TYPES = {
         "api_field": "PART_VARIABLE_HPRouge_TTC",
         "device_class": "monetary",
         "state_class": "measurement",
-        "unit": "€/kWh",
+        "unit": f"{CURRENCY_EURO}/{UnitOfEnergy.KILO_WATT_HOUR}",
         "icon": "mdi:flash",
         "suggested_display_precision": 4,
     },
@@ -103,7 +105,7 @@ SENSOR_TYPES = {
         "api_field": "PART_FIXE_TTC",
         "device_class": "monetary",
         "state_class": "total_increasing",
-        "unit": "€/an",
+        "unit": f"{CURRENCY_EURO}/{UnitOfTime.YEARS}",
         "icon": "mdi:cash",
         "suggested_display_precision": 2,
     },
