@@ -1,10 +1,9 @@
 repos:
   - repo: local
     hooks:
-      # Linting - optionnel, peut être commenté si trop strict
       - id: ruff
         name: ruff
-        entry: ruff check
+        entry: ruff check --config=pyproject.toml
         language: system
         types: [python]
         files: ^custom_components/
@@ -13,7 +12,7 @@ repos:
         
       - id: black
         name: black
-        entry: black --check
+        entry: black --check --config=pyproject.toml
         language: system
         types: [python]
         files: ^custom_components/
@@ -22,21 +21,14 @@ repos:
         
       - id: isort
         name: isort
-        entry: isort --check-only
+        entry: isort --check-only --settings-path=pyproject.toml
         language: system
         types: [python]
         files: ^custom_components/
         # Optionnel : décommenter pour ne pas bloquer le commit
-        # stages: [manual]
-      
-      # Tests - identiques à la CI
       - id: pytest
         name: pytest
         entry: pytest
         language: system
         types: [python]
         pass_filenames: false
-        # Utilise les mêmes options que la CI
-        args: ["-v", "--cov=custom_components.edf_tempo_tarifs", "--cov-report=term-missing"]
-        # Optionnel : décommenter pour lancer seulement en manuel
-        # stages: [manual]

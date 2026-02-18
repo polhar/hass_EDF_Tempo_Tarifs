@@ -1,20 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "custom_components.edf_tempo_tarifs"
+version = "0.1.0"
+description = "EDF Tempo Tarifs integration for Home Assistant"
+authors = [
+    {name = "Ton Nom", email = "ton.email@example.com"},
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Home Automation",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.5.0",
+    "homeassistant>=2026.2.0",
+    "pytest-homeassistant-custom-component>=0.13.0",
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "homeassistant>=2024.1.0",
+    "pytest-homeassistant-custom-component>=0.13.0",
+]
+lint = [
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "ruff>=0.1.0",
+]
+
+[project.entry-points."homeassistant.components"]
+edf_tempo_tarifs = "custom_components.edf_tempo_tarifs"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["custom_components*"]
+exclude = ["tests*"]
+
+[tool.setuptools]
+zip-safe = false
+
 [tool.black]
 line-length = 100
 target-version = ['py311']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
 
 [tool.isort]
 profile = "black"
@@ -28,26 +74,40 @@ ensure_newline_before_comments = true
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "C",   # flake8-comprehensions
-    "B",   # flake8-bugbear
+lint.select = [
+    "E", "W", "F", "I", "C", "B", "A", "ARG", "SIM", "T20", "RUF"
 ]
-ignore = [
-    "E501",  # line too long (handled by black)
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
+lint.ignore = [
+    "E501", "B008", "C901", "ARG002"
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"tests/*.py" = ["T20", "ARG", "F841", "SIM"]
 
 [tool.pytest.ini_options]
-testpaths = ["test"]
+testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
 asyncio_mode = "auto"
+addopts = "--strict-markers --asyncio-mode=auto --cov=custom_components.edf_tempo_tarifs --cov-report=term-missing"
+markers = [
+    "asyncio: mark test as asyncio-compatible",
+]
+
+[tool.coverage.run]
+source = ["custom_components"]
+omit = ["*/tests/*", "*/test_*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug",
+    "if __name__ == .__main__.",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if False:",
+]

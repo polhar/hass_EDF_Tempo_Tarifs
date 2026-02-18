@@ -5,7 +5,7 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
-  workflow_dispatch:  # Permet de lancer manuellement
+  workflow_dispatch:
 
 jobs:
   # Validation version
@@ -92,15 +92,13 @@ jobs:
           pip install -r requirements_test.txt
       
       - name: Run pytest
-        run: |
-          pytest -v --cov=custom_components.edf_tempo_tarifs --cov-report=xml --cov-report=term-missing
+        run: pytest
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  # Lint du code (optionnel mais recommandé)
   lint:
     name: Lint code
     runs-on: ubuntu-latest
@@ -119,13 +117,13 @@ jobs:
           pip install ruff black isort
       
       - name: Run ruff
-        run: ruff check custom_components/
+        run: ruff check --config=pyproject.toml custom_components/
         continue-on-error: true
       
       - name: Check code formatting with black
-        run: black --check custom_components/
+        run: black --check --config=pyproject.toml custom_components/
         continue-on-error: true
       
       - name: Check imports with isort
-        run: isort --check-only custom_components/
+        run: isort --check-only --settings-path=pyproject.toml custom_components/
         continue-on-error: true
