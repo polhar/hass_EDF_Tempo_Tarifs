@@ -22,21 +22,31 @@ jobs:
           VERSION=$(jq -r '.version' custom_components/edf_tempo_tarifs/manifest.json)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Validate on tag push
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Get pyproject version
+        id: pyproject
+        run: |
+          VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Validate version
         run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/v}"
-          
-          if [ "$TAG_VERSION" != "${{ steps.manifest.outputs.VERSION }}" ]; then
-            echo "❌ Tag version ($TAG_VERSION) doesn't match manifest.json (${{ steps.manifest.outputs.VERSION }})"
+          MANIFEST_VER="${{ steps.manifest.outputs.VERSION }}"
+          PYPROJECT_VER="${{ steps.pyproject.outputs.VERSION }}"
+
+          if [ "$TAG_VERSION" != "$MANIFEST_VER" ] || [ "$TAG_VERSION" != "$PYPROJECT_VER" ]; then
+            echo "❌ Version mismatch with tag:"
+            echo "   Tag:         $TAG_VERSION"
+            echo "   manifest.json: $MANIFEST_VER"
+            echo "   pyproject.toml: $PYPROJECT_VER"
             exit 1
           fi
-          echo "✅ Tag matches manifest.json"
+          echo "✅ All versions match tag: $TAG_VERSION"
+
 
       - name: Validate on PR
         if: github.event_name == 'pull_request'
         run: |
-          # Simple check: just ensure version is semver format
           VERSION="${{ steps.manifest.outputs.VERSION }}"
           
           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -44,6 +54,21 @@ jobs:
             exit 1
           fi
           echo "✅ PR version is valid semver"
+          
+  get-python-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      test-matrix: ${{ steps.get-versions.outputs.test-matrix }}
+      lint-version: ${{ steps.get-versions.outputs.lint-version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: get-versions
+        run: |
+          TEST_VERSIONS=$(grep -A2 "tool.supported-python" pyproject.toml | grep versions | cut -d'[' -f2 | cut -d']' -f1 | tr -d ' ' | tr ',' '\n' | sed 's/"//g' | jq -R -s -c 'split("\n")[:-1]')
+          echo "test-matrix={\"python-version\": $TEST_VERSIONS}" >> $GITHUB_OUTPUT
+          
+          LINT_VERSION=$(grep -A3 "tool.supported-python" pyproject.toml | grep lint-version | cut -d'"' -f2)
+          echo "lint-version=$LINT_VERSION" >> $GITHUB_OUTPUT
 
   # Validation HACS et Hassfest
   validate-hacs:
@@ -68,10 +93,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ${{ fromJson(needs.get-python-versions.outputs.test-matrix) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Get Python versions
+        id: get-versions
+        run: |
+          VERSIONS=$(grep -A5 "tool.supported-python" pyproject.toml | grep versions | cut -d'"' -f2 | tr '\n' ' ')
+          echo "matrix={\"python-version\": [\"${VERSIONS// /,}\"]}" >> $GITHUB_OUTPUT
       
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -109,7 +140,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ needs.get-python-versions.outputs.lint-version }}
       
       - name: Install linting tools
         run: |
