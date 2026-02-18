@@ -7,7 +7,7 @@ name = "custom_components.edf_tempo_tarifs"
 version = "1.0.1"
 description = "EDF Tempo Tarifs integration for Home Assistant"
 authors = [
-    {name = "Ton Nom", email = "ton.email@example.com"},
+    {name = "PolHar"},
 ]
 license = {text = "MIT"}
 readme = "README.md"
