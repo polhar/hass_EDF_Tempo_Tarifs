@@ -15,7 +15,9 @@ from .coordinator import EDFTempoTarifsCoordinator
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up EDF Tempo Tarifs sensors from a config entry."""
     coordinator: EDFTempoTarifsCoordinator = hass.data[DOMAIN][config_entry.entry_id]

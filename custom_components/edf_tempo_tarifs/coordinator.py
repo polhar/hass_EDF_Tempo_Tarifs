@@ -47,7 +47,9 @@ class EDFTempoTarifsCoordinator(DataUpdateCoordinator):
             return data
         except Exception as err:
             LOGGER.warning(
-                "Failed to update EDF Tempo Tarifs data: %s. Retrying in %s", err, RETRY_INTERVAL
+                "Failed to update EDF Tempo Tarifs data: %s. Retrying in %s",
+                err,
+                RETRY_INTERVAL,
             )
             # Changer temporairement l'intervalle (sera reset au prochain succès)
             self.update_interval = RETRY_INTERVAL
@@ -59,80 +61,78 @@ class EDFTempoTarifsCoordinator(DataUpdateCoordinator):
 
         LOGGER.debug("Fetching EDF Tempo Tarifs data for %s kVA", self.puissance_souscrite)
 
-        async with async_timeout.timeout(API_TIMEOUT):
-            async with self._session.get(API_URL, params=params) as response:
-                if response.status != 200:
-                    raise UpdateFailed(f"API returned status {response.status}")
+        async with (
+            async_timeout.timeout(API_TIMEOUT),
+            self._session.get(API_URL, params=params) as response,
+        ):
+            if response.status != 200:
+                raise UpdateFailed(f"API returned status {response.status}")
 
-                data = await response.json()
+            data = await response.json()
 
-                if (
-                    not data.get("data")
-                    or not isinstance(data["data"], list)
-                    or len(data["data"]) == 0
-                ):
-                    raise UpdateFailed("No data returned from API")
+            if not data.get("data") or not isinstance(data["data"], list) or len(data["data"]) == 0:
+                raise UpdateFailed("No data returned from API")
 
-                # Get the most recent entry (first in the list due to __id__sort=desc)
-                latest_data = data["data"][0]
+            # Get the most recent entry (first in the list due to __id__sort=desc)
+            latest_data = data["data"][0]
 
-                # Check if we have valid data (not all null in source)
-                has_valid_data = False
-                for sensor_info in SENSOR_TYPES.values():
-                    if latest_data.get(sensor_info["api_field"]) is not None:
-                        has_valid_data = True
-                        break
+            # Check if we have valid data (not all null in source)
+            has_valid_data = False
+            for sensor_info in SENSOR_TYPES.values():
+                if latest_data.get(sensor_info["api_field"]) is not None:
+                    has_valid_data = True
+                    break
 
-                if not has_valid_data:
-                    raise UpdateFailed("No valid data found in API response")
+            if not has_valid_data:
+                raise UpdateFailed("No valid data found in API response")
 
-                # Parse and convert data based on device_class
-                parsed_data = {}
+            # Parse and convert data based on device_class
+            parsed_data = {}
 
-                for sensor_key, sensor_info in SENSOR_TYPES.items():
-                    api_field = sensor_info["api_field"]
-                    raw_value = latest_data.get(api_field)
+            for sensor_key, sensor_info in SENSOR_TYPES.items():
+                api_field = sensor_info["api_field"]
+                raw_value = latest_data.get(api_field)
 
-                    value = None
-                    if raw_value is not None:
-                        try:
-                            # Conversion selon le device_class
-                            if sensor_info.get("device_class") == "date":
-                                value = datetime.strptime(str(raw_value), "%Y-%m-%d").date()
-                            elif sensor_info.get("device_class") == "monetary":
-                                value = float(raw_value)
-                            else:
-                                value = raw_value
+                value = None
+                if raw_value is not None:
+                    try:
+                        # Conversion selon le device_class
+                        if sensor_info.get("device_class") == "date":
+                            value = datetime.strptime(str(raw_value), "%Y-%m-%d").date()
+                        elif sensor_info.get("device_class") == "monetary":
+                            value = float(raw_value)
+                        else:
+                            value = raw_value
 
-                        except (ValueError, TypeError) as e:
-                            LOGGER.error(
-                                "Erreur conversion %s: %s (valeur: %s, type: %s)",
-                                sensor_key,
-                                e,
-                                raw_value,
-                                type(raw_value),
-                            )
-                            value = None
+                    except (ValueError, TypeError) as e:
+                        LOGGER.error(
+                            "Erreur conversion %s: %s (valeur: %s, type: %s)",
+                            sensor_key,
+                            e,
+                            raw_value,
+                            type(raw_value),
+                        )
+                        value = None
 
-                    parsed_data[sensor_key] = value
+                parsed_data[sensor_key] = value
 
-                # Check if we have at least some successfully converted data
-                has_converted_data = False
-                for _key, value in parsed_data.items():
-                    if value is not None:
-                        has_converted_data = True
-                        break
+            # Check if we have at least some successfully converted data
+            has_converted_data = False
+            for _key, value in parsed_data.items():
+                if value is not None:
+                    has_converted_data = True
+                    break
 
-                if not has_converted_data:
-                    raise UpdateFailed("No valid data after conversion")
+            if not has_converted_data:
+                raise UpdateFailed("No valid data after conversion")
 
-                # Store metadata
-                parsed_data["raw_data"] = latest_data
-                parsed_data["last_update"] = datetime.now()
-                parsed_data["puissance_souscrite"] = self.puissance_souscrite
+            # Store metadata
+            parsed_data["raw_data"] = latest_data
+            parsed_data["last_update"] = datetime.now()
+            parsed_data["puissance_souscrite"] = self.puissance_souscrite
 
-                LOGGER.debug("Successfully updated EDF Tempo Tarifs data")
-                return parsed_data
+            LOGGER.debug("Successfully updated EDF Tempo Tarifs data")
+            return parsed_data
 
     async def update_puissance(self, nouvelle_puissance: int):
         """Mettre à jour la puissance souscrite sans recréer le coordinateur."""
